@@ -2,7 +2,7 @@
 
 ## How to use
 1. Download the repository to your PC. The top right button should allow for those options.
-2. Unzip the file (right click, click 'extract all'
+2. Unzip the file (right click, click 'extract all')
 3. Double click on the `.bat` file. This should run command prompt.
 4. Enter in the information as prompted. **Make sure to read the prompts carefully.**
 5. You will need to sign in to MyCoyote after the chrome window opens up. 
