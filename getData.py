@@ -13,12 +13,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 class TimeSheetDate:
     'An object to represent what will be put on the timesheet'
 
-    def __init__(self, sheetDate, timeIn, timeOut, hours):
+    def __init__(self, sheetDate, timeIn, timeOut, hours, b):
         newDate = sheetDate.split("/") # passed in as a m/d/yyyy
         self.useDate = datetime(int(newDate[2]), int(newDate[0]), int(newDate[1])) # to make sure its proper date
         self.timeIn = timeIn # note that these times are not in military time as of construction, call getMilitaryTime to get that
         self.timeOut = timeOut # times passed in as hh:mm am/pm
         self.hours = hours
+        self.isEndOfWeek = b
 
     def getDayWeek(self): # can be used with dayIntToString to get name of day instead of int
         return self.useDate.weekday() # monday = 0, sunday = 6
@@ -71,6 +72,28 @@ class TimeSheetDate:
         print("Time out: " + self.getMilitaryTime(self.timeOut))
         print("Total hours: " + str(self.hours))
         print()
+
+# # employee ID
+# eid = "7247156"
+
+# # adobe sign email
+# asemail = "logan.ashbaugh7156"
+
+# # school ID
+# sid = "007247156"
+
+# # units enrolled
+# uni = "16" 
+
+# # start date
+# sdate = "2/8/2022" 
+# nstart = sdate.split("/")
+# begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+
+# # end date
+# edate = "31/8/2022"
+# nend = edate.split("/")
+# endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
 # employee ID
 eid = input("Enter your employee ID number: ")
@@ -209,14 +232,21 @@ while(bGatherDates):
         # time.sleep(0.2) # getting invalid elements without this >:(
         if(i >= 3 and i < len(rows) - 12): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
             items = element.find_elements(By.TAG_NAME, "td") # row is an element (but also a list) in the above list, index 6 = time in, 7 = time out, 8 = hours
-            dateToCheck = items[6].text
-            if(isDateInRange(dateToCheck)):
+            
+            # need to make check for when the hidden element is there or not, and if not then subtract index by 1
+            checkedIndex = 0
+            if(items[10].text == "5 - ATI Student Assistant"):
+                checkedIndex = -1
+            
+            dateToCheck = items[6 + checkedIndex].text
+            if(isDateInRange(dateToCheck)): 
                 # store this value in a list of objects with date, time in, time out, and hours
-                # first seperate the dates from the times
+                # first seperate the dates from the times 
                 dateIn = dateToCheck.split(" ") # we grab the date from here and not from the time out, formatted as mm/dd/yyyy hh:mm am/pm
-                dateOut = items[7].text.split(" ")
+                dateOut = items[7 + checkedIndex].text.split(" ")
+
                 # create object and add to list
-                listOfDates.append(TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8].text))
+                listOfDates.append(TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8 + checkedIndex].text, i == len(rows) - 13))
             else:
                 secDate = WebDriverWait(driver, timeout=3).until(lambda d: d.find_element(By.CLASS_NAME, "PeriodTotal")).text # need the top date range
                 if(checkSecondDate(secDate)): 
@@ -225,6 +255,14 @@ while(bGatherDates):
                     # this should break the loop and put dates
                     bGatherDates = False
                     break
+        elif (element.text == "No records found"):
+            secDate = WebDriverWait(driver, timeout=3).until(lambda d: d.find_element(By.CLASS_NAME, "PeriodTotal")).text # need the top date range
+            if(checkSecondDate(secDate)): 
+                # if this is false then we are on the first page and shouldnt break loop, 
+                # but if its true then we should break because we are out of the range of dates we need to gather
+                # this should break the loop and put dates
+                bGatherDates = False
+                break
     pageForward()
 
 # since listOfDates has all the data we need, we can now put all data in the adobe timesheet
@@ -283,7 +321,7 @@ units.send_keys(str(uni))
 # can try getting all the elements of class 'pdfFormField text_field todo-done'?
 sheetRange = driver.find_elements(By.CLASS_NAME, "todo-done")
 
-# for some fucking reason the fourth tuesday isnt added, so here is an attempt to add it manually
+# for some [heck]ing reason the fourth tuesday isnt added, so here is an attempt to add it manually
 badTues = driver.find_element(By.XPATH, "//*[@id=\"document\"]/ul/li/div[191]")
 indBeforeBadTues = driver.find_element(By.XPATH, "//*[@id=\"document\"]/ul/li/div[188]")
 badInd = sheetRange.index(indBeforeBadTues)
@@ -318,14 +356,20 @@ for j in range(0, len(listOfDates)):
         toBox.send_keys(listOfDates[j].getTimeSheetTimeOut())
 
         # increment number in day counter list
-        dayCounterList[dayOfWeek] = dayCounterList[dayOfWeek] + 1
+        dayCounterList[dayOfWeek] += 1
     
-    # if(dayOfWeek != 0 and dayCounterList[dayOfWeek - 1] < dayCounterList[dayOfWeek]): # this is so that days off arent put on the week before
-    #     dayCounterList[dayOfWeek - 1] = dayCounterList[dayOfWeek - 1] + 1
-    temp = dayCounterList[dayOfWeek]
-    for t in range(0, dayOfWeek):
-        if (dayCounterList[t] < dayCounterList[dayOfWeek]):
-            dayCounterList[t] = dayCounterList[t] + 1
+    # make sure days are put on the right week
+    if(listOfDates[j].isEndOfWeek):
+        for t in range(0, len(dayCounterList)):
+            if(t <= dayOfWeek):
+                if (dayCounterList[t] < dayCounterList[dayOfWeek]):
+                    # dayCounterList[t] = dayCounterList[dayOfWeek]
+                    dayCounterList[t] += 1
+            else:
+                # here, the day is in the future so we check if its behind by 2, since being behind by 1 is normal
+                if (dayCounterList[t] < dayCounterList[dayOfWeek] + 1):
+                    # dayCounterList[t] = dayCounterList[dayOfWeek]
+                    dayCounterList[t] += 1
 
 # time.sleep(10)
 
