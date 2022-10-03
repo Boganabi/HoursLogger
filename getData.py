@@ -233,7 +233,6 @@ while(bGatherDates):
         # changed below to 13 instead of 12 bc website changed ig
         if(i >= 3 and i < len(rows) - 13): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
             items = element.find_elements(By.TAG_NAME, "td") # row is an element (but also a list) in the above list, index 6 = time in, 7 = time out, 8 = hours
-            print("length: " + str(len(items)))
             # need to make check for when the hidden element is there or not, and if not then subtract index by 1
             checkedIndex = 0
             if(items[10].text == "5 - ATI Student Assistant"):
