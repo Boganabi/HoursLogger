@@ -230,9 +230,10 @@ while(bGatherDates):
     # elements 7 - 19 are trs that we do not want
     for i, element in enumerate(rows):
         # time.sleep(0.2) # getting invalid elements without this >:(
-        if(i >= 3 and i < len(rows) - 12): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
+        # changed below to 13 instead of 12 bc website changed ig
+        if(i >= 3 and i < len(rows) - 13): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
             items = element.find_elements(By.TAG_NAME, "td") # row is an element (but also a list) in the above list, index 6 = time in, 7 = time out, 8 = hours
-            
+            print("length: " + str(len(items)))
             # need to make check for when the hidden element is there or not, and if not then subtract index by 1
             checkedIndex = 0
             if(items[10].text == "5 - ATI Student Assistant"):
@@ -246,7 +247,7 @@ while(bGatherDates):
                 dateOut = items[7 + checkedIndex].text.split(" ")
 
                 # create object and add to list
-                listOfDates.append(TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8 + checkedIndex].text, i == len(rows) - 13))
+                listOfDates.append(TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8 + checkedIndex].text, i == len(rows) - 14))
             else:
                 secDate = WebDriverWait(driver, timeout=3).until(lambda d: d.find_element(By.CLASS_NAME, "PeriodTotal")).text # need the top date range
                 if(checkSecondDate(secDate)): 
