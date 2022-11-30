@@ -73,49 +73,49 @@ class TimeSheetDate:
         print("Total hours: " + str(self.hours))
         print()
 
-# employee ID
-eid = "7247156"
-
-# adobe sign email
-asemail = "logan.ashbaugh7156"
-
-# school ID
-sid = "007247156"
-
-# units enrolled
-uni = "16" 
-
-# start date
-sdate = "01/11/2022" 
-nstart = sdate.split("/")
-begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
-
-# end date
-edate = "30/11/2022"
-nend = edate.split("/")
-endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
-
 # # employee ID
-# eid = input("Enter your employee ID number: ")
+# eid = "7247156"
 
 # # adobe sign email
-# asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+# asemail = "logan.ashbaugh7156"
 
 # # school ID
-# sid = input("Enter your school ID number: ")
+# sid = "007247156"
 
 # # units enrolled
-# uni = input("Enter the amount of units you are currently enrolled in: ")
+# uni = "16" 
 
 # # start date
-# sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+# sdate = "01/11/2022" 
 # nstart = sdate.split("/")
 # begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
 # # end date
-# edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+# edate = "30/11/2022"
 # nend = edate.split("/")
 # endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+
+# employee ID
+eid = input("Enter your employee ID number: ")
+
+# adobe sign email
+asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+
+# school ID
+sid = input("Enter your school ID number: ")
+
+# units enrolled
+uni = input("Enter the amount of units you are currently enrolled in: ")
+
+# start date
+sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+nstart = sdate.split("/")
+begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+
+# end date
+edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+nend = edate.split("/")
+endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
 def checkDate(dateRange): # return a number corresponding to the state that the current page is on relative to the time sheet dates
     dateList = dateRange.split(" ")
