@@ -73,49 +73,49 @@ class TimeSheetDate:
         print("Total hours: " + str(self.hours))
         print()
 
-# # employee ID
-# eid = "7247156"
-
-# # adobe sign email
-# asemail = "logan.ashbaugh7156"
-
-# # school ID
-# sid = "007247156"
-
-# # units enrolled
-# uni = "16" 
-
-# # start date
-# sdate = "2/8/2022" 
-# nstart = sdate.split("/")
-# begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
-
-# # end date
-# edate = "31/8/2022"
-# nend = edate.split("/")
-# endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
-
 # employee ID
-eid = input("Enter your employee ID number: ")
+eid = "7247156"
 
 # adobe sign email
-asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+asemail = "logan.ashbaugh7156"
 
 # school ID
-sid = input("Enter your school ID number: ")
+sid = "007247156"
 
 # units enrolled
-uni = input("Enter the amount of units you are currently enrolled in: ")
+uni = "16" 
 
 # start date
-sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+sdate = "01/11/2022" 
 nstart = sdate.split("/")
 begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
 # end date
-edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+edate = "30/11/2022"
 nend = edate.split("/")
 endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+
+# # employee ID
+# eid = input("Enter your employee ID number: ")
+
+# # adobe sign email
+# asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+
+# # school ID
+# sid = input("Enter your school ID number: ")
+
+# # units enrolled
+# uni = input("Enter the amount of units you are currently enrolled in: ")
+
+# # start date
+# sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+# nstart = sdate.split("/")
+# begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+
+# # end date
+# edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+# nend = edate.split("/")
+# endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
 def checkDate(dateRange): # return a number corresponding to the state that the current page is on relative to the time sheet dates
     dateList = dateRange.split(" ")
@@ -229,9 +229,9 @@ while(bGatherDates):
     # 3 is the first tr element, need to find a way to iterate to the last tr that we need
     # elements 7 - 19 are trs that we do not want
     for i, element in enumerate(rows):
-        # time.sleep(0.2) # getting invalid elements without this >:(
+        time.sleep(0.2) # getting invalid elements without this >:(
         # changed below to 13 instead of 12 bc website changed ig
-        if(i >= 3 and i < len(rows) - 13): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
+        if(i >= 3 and i < len(rows) - 12): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
             items = element.find_elements(By.TAG_NAME, "td") # row is an element (but also a list) in the above list, index 6 = time in, 7 = time out, 8 = hours
             # need to make check for when the hidden element is there or not, and if not then subtract index by 1
             checkedIndex = 0
