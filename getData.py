@@ -150,7 +150,6 @@ def checkSecondDate(inDate): # returns true if the second date is out of the ran
     dateList = inDate.split(" ")
     second = dateList[2].split("/") # this gives us the second date
     dateOn = datetime(endTimeSheet.year, int(second[0]), int(second[1]))
-    print("dateOn: " + str(dateOn) + " endTimeSheet: " + str(endTimeSheet))
     if(dateOn.month < endTimeSheet.month):
         return True
     return dateOn > endTimeSheet

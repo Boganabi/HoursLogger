@@ -70,8 +70,14 @@ if ERRORLEVEL 1 GOTO errNoPy
 GOTO :pyIn
 
 :errNoPy
-ECHO python is not installed on your machine. Please go to the python website to install the latest version.
-start "" "https://www.python.org/downloads/windows/"
+ECHO python is not installed on your machine. Attempting to install now...
+:: download installer
+curl "https://www.python.org/ftp/python/3.9.4/python-3.9.4-amd64.exe" -o python-installer.exe
+:: run installer
+python-installer.exe /quiet InstallAllUsers=1 PrependPath=1
+:: refresh env variables - will leave out for now because am lazy xd
+:: call RefreshEnv.cmd
+:: start "" "https://www.python.org/downloads/windows/"
 GOTO :EOF
 
 :pyIn
