@@ -73,49 +73,49 @@ class TimeSheetDate:
         print("Total hours: " + str(self.hours))
         print()
 
-# # employee ID
-# eid = "7247156"
-
-# # adobe sign email
-# asemail = "logan.ashbaugh7156"
-
-# # school ID
-# sid = "007247156"
-
-# # units enrolled
-# uni = "16" 
-
-# # start date
-# sdate = "01/11/2022" 
-# nstart = sdate.split("/")
-# begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
-
-# # end date
-# edate = "30/11/2022"
-# nend = edate.split("/")
-# endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
-
 # employee ID
-eid = input("Enter your employee ID number: ")
+eid = "7247156"
 
 # adobe sign email
-asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+asemail = "logan.ashbaugh7156"
 
 # school ID
-sid = input("Enter your school ID number: ")
+sid = "007247156"
 
 # units enrolled
-uni = input("Enter the amount of units you are currently enrolled in: ")
+uni = "16" 
 
 # start date
-sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+sdate = "01/12/2022" 
 nstart = sdate.split("/")
 begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
 # end date
-edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+edate = "21/12/2022"
 nend = edate.split("/")
 endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+
+# # employee ID
+# eid = input("Enter your employee ID number: ")
+
+# # adobe sign email
+# asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+
+# # school ID
+# sid = input("Enter your school ID number: ")
+
+# # units enrolled
+# uni = input("Enter the amount of units you are currently enrolled in: ")
+
+# # start date
+# sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+# nstart = sdate.split("/")
+# begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+
+# # end date
+# edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+# nend = edate.split("/")
+# endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
 def checkDate(dateRange): # return a number corresponding to the state that the current page is on relative to the time sheet dates
     dateList = dateRange.split(" ")
@@ -124,7 +124,7 @@ def checkDate(dateRange): # return a number corresponding to the state that the 
     begDate = datetime(date.today().year, int(first[0]), int(first[1]))
     endDate = datetime(date.today().year, int(second[0]), int(second[1]))
 
-    if((begTimeSheet >= begDate and begTimeSheet <= endDate) or begDate > endDate): # good, we are on the right date
+    if((begTimeSheet >= begDate and begTimeSheet <= endDate) or begDate.year > endDate.year): # good, we are on the right date
         #we also check begDate > endDate bc if that is true then we are at the beginning of the year, which is always a good date to scrape from
         return 0
     elif(begTimeSheet < begDate): # bad, we are too far back
@@ -149,7 +149,10 @@ def isDateInRange(inDate): # returns true if date is is the range we want to scr
 def checkSecondDate(inDate): # returns true if the second date is out of the range we want to scrape
     dateList = inDate.split(" ")
     second = dateList[2].split("/") # this gives us the second date
-    dateOn = datetime(date.today().year, int(second[0]), int(second[1]))
+    dateOn = datetime(endTimeSheet.year, int(second[0]), int(second[1]))
+    print("dateOn: " + str(dateOn) + " endTimeSheet: " + str(endTimeSheet))
+    if(dateOn.month < endTimeSheet.month):
+        return True
     return dateOn > endTimeSheet
 
 def getMonthFromNumber(month):
