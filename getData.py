@@ -73,63 +73,68 @@ class TimeSheetDate:
         print("Total hours: " + str(self.hours))
         print()
 
-# # employee ID
-# eid = "7247156"
+devMode = True
+if(devMode):
+    # employee ID
+    eid = "7247156"
 
-# # adobe sign email
-# asemail = "logan.ashbaugh7156"
+    # adobe sign email
+    asemail = "logan.ashbaugh7156"
 
-# # school ID
-# sid = "007247156"
+    # school ID
+    sid = "007247156"
 
-# # units enrolled
-# uni = "16" 
+    # units enrolled
+    uni = "16" 
 
-# # start date
-# sdate = "01/12/2022" 
-# nstart = sdate.split("/")
-# begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+    # start date
+    sdate = "01/12/2022" 
+    nstart = sdate.split("/")
+    begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
-# # end date
-# edate = "21/12/2022"
-# nend = edate.split("/")
-# endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+    # end date
+    edate = "21/12/2022"
+    nend = edate.split("/")
+    endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
-# employee ID
-eid = input("Enter your employee ID number: ")
+else:
+    # employee ID
+    eid = input("Enter your employee ID number: ")
 
-# adobe sign email
-asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+    # adobe sign email
+    asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
 
-# school ID
-sid = input("Enter your school ID number: ")
+    # school ID
+    sid = input("Enter your school ID number: ")
 
-# units enrolled
-uni = input("Enter the amount of units you are currently enrolled in: ")
+    # units enrolled
+    uni = input("Enter the amount of units you are currently enrolled in: ")
 
-# start date
-sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
-nstart = sdate.split("/")
-begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+    # start date
+    sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+    nstart = sdate.split("/")
+    begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
-# end date
-edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
-nend = edate.split("/")
-endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+    # end date
+    edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+    nend = edate.split("/")
+    endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
 def checkDate(dateRange): # return a number corresponding to the state that the current page is on relative to the time sheet dates
     dateList = dateRange.split(" ")
     first = dateList[0].split("/")
     second = dateList[2].split("/") # we get the 2nd element bc the one before is just a -
-    begDate = datetime(date.today().year, int(first[0]), int(first[1]))
-    endDate = datetime(date.today().year, int(second[0]), int(second[1]))
+    # begDate = datetime(date.today().year, int(first[0]), int(first[1]))
+    # endDate = datetime(date.today().year, int(second[0]), int(second[1]))
+    begDate = datetime(begTimeSheet.year, int(first[0]), int(first[1]))
+    endDate = datetime(endTimeSheet.year, int(second[0]), int(second[1]))
 
-    if((begTimeSheet >= begDate and begTimeSheet <= endDate) or begDate.year > endDate.year): # good, we are on the right date
-        #we also check begDate > endDate bc if that is true then we are at the beginning of the year, which is always a good date to scrape from
+    if(begTimeSheet >= begDate and begTimeSheet <= endDate):
         return 0
-    elif(begTimeSheet < begDate): # bad, we are too far back
+    elif(begTimeSheet < begDate or begDate.month == 1 and begTimeSheet.month == 12): # bad, we are too far forward, we need to move back
+        # the second or statement is an edge case where current month is january but timesheet dates are in december and need to move back
         return -1
-    else: # bad, we are too far forward
+    else: # bad, we are too far back and need to move forward
         return 1
 
 def pageBack():
