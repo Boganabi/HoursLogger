@@ -73,7 +73,7 @@ class TimeSheetDate:
         print("Total hours: " + str(self.hours))
         print()
 
-devMode = True
+devMode = False
 if(devMode):
     # employee ID
     eid = "7247156"
@@ -295,7 +295,7 @@ adminBox = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/di
 adminBox.send_keys("jamest@csusb.edu") # admin box
 
 ccBox = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[4]/div[4]/div/div/div[2]/div/div[1]/textarea")
-ccBox.send_keys("Brenda.DeLaCruz@csusb.edu") # CC box
+ccBox.send_keys("ashleea.holloway@csusb.edu") # CC box
 
 signButton = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[6]/div/ul/li/button")
 signButton.send_keys(Keys.PAGE_DOWN) # need to scroll to button bc element is blocking it
