@@ -309,7 +309,7 @@ cid.send_keys(str(sid)) # ID goes here
 
 # second field: rate of pay
 payrate = driver.find_element(By.NAME, "PAY_RATE")
-payrate.send_keys("15")
+payrate.send_keys("15.00")
 
 # third field: month and year of timesheet
 mon = driver.find_element(By.NAME, "MONTH  YEAR OF TIMESHEET")
