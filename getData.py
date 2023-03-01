@@ -85,15 +85,15 @@ if(devMode):
     sid = "007247156"
 
     # units enrolled
-    uni = "16" 
+    uni = "18" 
 
     # start date
-    sdate = "01/12/2022" 
+    sdate = "2/1/2023" 
     nstart = sdate.split("/")
     begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
     # end date
-    edate = "21/12/2022"
+    edate = "30/1/2023"
     nend = edate.split("/")
     endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
@@ -111,12 +111,12 @@ else:
     uni = input("Enter the amount of units you are currently enrolled in: ")
 
     # start date
-    sdate = input("Enter the start date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+    sdate = input("Enter the start date for your timesheet in DD/MM/YYYY format, omit leading 0's (ex: 21/7/2022): ")
     nstart = sdate.split("/")
     begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
     # end date
-    edate = input("Enter the end date for your timesheet, omit leading 0's (ex: 21/7/2022): ")
+    edate = input("Enter the end date for your timesheet in DD/MM/YYYY format, omit leading 0's (ex: 21/7/2022): ")
     nend = edate.split("/")
     endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
@@ -129,6 +129,7 @@ def checkDate(dateRange): # return a number corresponding to the state that the 
     begDate = datetime(begTimeSheet.year, int(first[0]), int(first[1]))
     endDate = datetime(endTimeSheet.year, int(second[0]), int(second[1]))
 
+    # if((begTimeSheet >= begDate and begTimeSheet <= endDate) or begTimeSheet == begDate or begTimeSheet == endDate):
     if(begTimeSheet >= begDate and begTimeSheet <= endDate):
         return 0
     elif(begTimeSheet < begDate or begDate.month == 1 and begTimeSheet.month == 12): # bad, we are too far forward, we need to move back
@@ -155,9 +156,10 @@ def checkSecondDate(inDate): # returns true if the second date is out of the ran
     dateList = inDate.split(" ")
     second = dateList[2].split("/") # this gives us the second date
     dateOn = datetime(endTimeSheet.year, int(second[0]), int(second[1]))
-    if(dateOn.month < endTimeSheet.month):
+
+    if(dateOn.month > endTimeSheet.month):
         return True
-    return dateOn > endTimeSheet
+    return False
 
 def getMonthFromNumber(month):
     switcher = {
