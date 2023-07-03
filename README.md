@@ -10,3 +10,6 @@
 5. You will need to sign in to MyCoyote after the chrome window opens up. 
 6. Once the hours have been entered on the timesheet, double check the information, and correct necessary things.
 7. Once you are sure all the information is correct, attach your class schedule and sign.
+
+## Config File
+A config file can be setup to prevent having to enter the same information each month. Simply edit the config.txt file. You can also use it to change emails if you have a different supervisor.

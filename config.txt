@@ -1,0 +1,18 @@
+EMPLOYEE_ID=""
+SCHOOL_ID=""
+ADOBE_SIGN_EMAIL=""
+UNITS_ENROLLED=""
+
+# examples:
+#   EMPLOYEE_ID="0177013"
+#   SCHOOL_ID="420177013"
+#   ADOBE_SIGN_EMAIL="420177013" or ="name.iforgot2"
+#   UNITS_ENROLLED="21"
+
+REVIEWER_EMAIL="marcy.iniguez@csusb.edu"
+SUPERVISOR_EMAIL="jamest@csusb.edu"
+ADMIN_EMAIL="bobby.laudeman@csusb.edu"
+CC_EMAIL="ashleea.holloway@csusb.edu"
+
+#TEST_TIMESHEET_START_DATE="6/1/2023"
+#TEST_TIMESHEET_END_DATE="6/30/2023"

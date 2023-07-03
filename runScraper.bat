@@ -129,9 +129,9 @@ if exist requirements.txt (
 )
 
 :: check if python script exists
-if exist getData.py (
+if exist main.py (
     ECHO python script found. Running script...
-    python getData.py
+    python main.py
 ) else (
     ECHO python script not found. Please install it in the correct directory
     GOTO :EOF
