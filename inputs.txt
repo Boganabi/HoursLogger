@@ -1,0 +1,20 @@
+# employee ID
+7247156
+# adobe sign email (omit the @coyote.csusb.edu)
+logan.ashbaugh7156
+# school ID
+007247156
+# units enrolled
+14
+# start date (DD/MM/YYYY, omit leading 0's) (ex: 21/7/2022)
+31/1/2024
+# end date (DD/MM/YYYY omit leading 0's) (ex: 21/7/2022)
+29/2/2024
+# reviewer
+marcy.iniguez@csusb.edu
+# supervisor
+bobby.laudeman@csusb.edu
+# admin
+jamest@csusb.edu
+# cc
+ashleea.holloway@csusb.edu

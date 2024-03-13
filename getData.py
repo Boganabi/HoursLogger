@@ -1,5 +1,5 @@
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import time
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
@@ -73,52 +73,76 @@ class TimeSheetDate:
         print("Total hours: " + str(self.hours))
         print()
 
-devMode = False
-if(devMode):
-    # employee ID
-    eid = "7247156"
+"""
+# devMode = True
+# if(devMode):
+#     # employee ID
+#     eid = "7247156"
 
-    # adobe sign email
-    asemail = "logan.ashbaugh7156"
+#     # adobe sign email
+#     asemail = "logan.ashbaugh7156"
 
-    # school ID
-    sid = "007247156"
+#     # school ID
+#     sid = "007247156"
 
-    # units enrolled
-    uni = "18" 
+#     # units enrolled
+#     uni = "15" 
 
-    # start date
-    sdate = "2/1/2023" 
-    nstart = sdate.split("/")
-    begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+#     # start date
+#     sdate = "1/10/2023" 
+#     nstart = sdate.split("/")
+#     begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
-    # end date
-    edate = "30/1/2023"
-    nend = edate.split("/")
-    endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+#     # end date
+#     edate = "31/10/2023"
+#     nend = edate.split("/")
+#     endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
 
-else:
-    # employee ID
-    eid = input("Enter your employee ID number: ")
+# else:
+#     # employee ID
+#     eid = input("Enter your employee ID number: ")
 
-    # adobe sign email
-    asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
+#     # adobe sign email
+#     asemail = input("Enter your adobe sign email (omit the @coyote.csusb.edu): ")
 
-    # school ID
-    sid = input("Enter your school ID number: ")
+#     # school ID
+#     sid = input("Enter your school ID number: ")
 
-    # units enrolled
-    uni = input("Enter the amount of units you are currently enrolled in: ")
+#     # units enrolled
+#     uni = input("Enter the amount of units you are currently enrolled in: ")
 
-    # start date
-    sdate = input("Enter the start date for your timesheet in DD/MM/YYYY format, omit leading 0's (ex: 21/7/2022): ")
-    nstart = sdate.split("/")
-    begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
+#     # start date
+#     sdate = input("Enter the start date for your timesheet in DD/MM/YYYY format, omit leading 0's (ex: 21/7/2022): ")
+#     nstart = sdate.split("/")
+#     begTimeSheet = datetime(int(nstart[2]), int(nstart[1]), int(nstart[0]))
 
-    # end date
-    edate = input("Enter the end date for your timesheet in DD/MM/YYYY format, omit leading 0's (ex: 21/7/2022): ")
-    nend = edate.split("/")
-    endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+#     # end date
+#     edate = input("Enter the end date for your timesheet in DD/MM/YYYY format, omit leading 0's (ex: 21/7/2022): ")
+#     nend = edate.split("/")
+#     endTimeSheet = datetime(int(nend[2]), int(nend[1]), int(nend[0]))
+"""
+# using the file reading solution here
+eid = asemail = sid = uni = sdate = edate = reviewer = supervisor = admin = cc = "" 
+
+infoArray = []
+
+# use this instead of open function bc this way file will automatically close
+with open('inputs.txt') as f:
+
+    # parse file into each variable
+    for x in f:
+        # skip "comment" lines and empty lines
+        if(x[0] and x[0] not in ["#", "\n"]):
+            infoArray.append(x)
+
+# parse values out of array
+eid, asemail, sid, uni, sdate, edate, reviewer, supervisor, admin, cc = infoArray
+
+# parse into date objects
+sdate = sdate.split("/")
+edate = edate.split("/")
+begTimeSheet = datetime(int(sdate[2]), int(sdate[1]), int(sdate[0]))
+endTimeSheet = datetime(int(edate[2]), int(edate[1]), int(edate[0]))
 
 def checkDate(dateRange): # return a number corresponding to the state that the current page is on relative to the time sheet dates
     dateList = dateRange.split(" ")
@@ -192,6 +216,11 @@ def dayIntToString(num):
 
     return switcher.get(num, "Invalid") # this calls the dictionary and returns invalid (the second argument if nothing is returned)
 
+def truncateYear(date):
+    # takes in mm/dd/yyyy and returns mm/dd
+    splitDate = date.split("/")
+    return splitDate[0] + "/" + splitDate[1]
+
 def findCorrespondingDay(day, inc):
     strDay = dayIntToString(day)
     for i in range(0, len(sheetRange)):
@@ -227,21 +256,33 @@ while(rangeInt != 0):
         pageForward()
 
 # now that we are on the right date, we can begin scraping data
-
+# refactor to use dictionary instead
 listOfDates = [] 
+# information i want in the dict:
+# week number and day of the week
+datesDict = {}
 
 bGatherDates = True
 while(bGatherDates):
     time.sleep(0.2) # small sleep so that the right dates are scraped, can cause issues in loop if no sleep
-    rows = WebDriverWait(driver, timeout=3).until(lambda d: d.find_elements(By.TAG_NAME, "tr")) # list of all timestamps
+    # rows = WebDriverWait(driver, timeout=3).until(lambda d: d.find_elements(By.TAG_NAME, "tr")) # list of all timestamps
+    table = WebDriverWait(driver, timeout=3).until(lambda d: d.find_element(By.XPATH, "//*[@id=\"featureForm\"]/div[2]/div/table/tbody"))
+    rows = table.find_elements(By.TAG_NAME, "tr")
     # since there are more than 1 tr elements on the page we need to find the specific one we need
     # 3 is the first tr element, need to find a way to iterate to the last tr that we need
     # elements 7 - 19 are trs that we do not want
     for i, element in enumerate(rows):
         time.sleep(0.2) # getting invalid elements without this >:(
+        # print(len(rows))
         # changed below to 13 instead of 12 bc website changed ig
-        if(i >= 3 and i < len(rows) - 12): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
+        # if(i >= 3 and i < len(rows) - 12): # since there are 12 extra tr elements we dont want, and 2 before that we also dont want
+        if(i < len(rows) - 1): # 1 extra tr at end of table
             items = element.find_elements(By.TAG_NAME, "td") # row is an element (but also a list) in the above list, index 6 = time in, 7 = time out, 8 = hours
+            if(len(items) < 10):
+                print(len(items))
+                for thing in items:
+                    print(thing)
+                    print(thing.text)
             # need to make check for when the hidden element is there or not, and if not then subtract index by 1
             checkedIndex = 0
             if(items[10].text == "5 - ATI Student Assistant"):
@@ -256,6 +297,11 @@ while(bGatherDates):
 
                 # create object and add to list
                 listOfDates.append(TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8 + checkedIndex].text, i == len(rows) - 14))
+                # need to check if the key exists first, then add a second value as a list if it does exist
+                if truncateYear(dateIn[0]) in datesDict:
+                    datesDict[truncateYear(dateIn[0])].append(TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8 + checkedIndex].text, i == len(rows) - 14))
+                else:
+                    datesDict[truncateYear(dateIn[0])] = [TimeSheetDate(dateIn[0], str(dateIn[1]) + str(dateIn[2]), str(dateOut[1]) + str(dateOut[2]), items[8 + checkedIndex].text, i == len(rows) - 14)]
             else:
                 secDate = WebDriverWait(driver, timeout=3).until(lambda d: d.find_element(By.CLASS_NAME, "PeriodTotal")).text # need the top date range
                 if(checkSecondDate(secDate)): 
@@ -311,7 +357,7 @@ cid.send_keys(str(sid)) # ID goes here
 
 # second field: rate of pay
 payrate = driver.find_element(By.NAME, "PAY_RATE")
-payrate.send_keys("15.50")
+payrate.send_keys("16.00")
 
 # third field: month and year of timesheet
 mon = driver.find_element(By.NAME, "MONTH  YEAR OF TIMESHEET")
@@ -323,7 +369,7 @@ jobTitle.send_keys("Student Assistant")
 
 # fifth field: department
 dept = driver.find_element(By.NAME, "DEPARTMENT")
-dept.send_keys("ITS ATI")
+dept.send_keys("MIT")
 
 # sixth field: unit enrollment
 units = driver.find_element(By.NAME, "Current Unit Enrollment")
@@ -339,49 +385,110 @@ indBeforeBadTues = driver.find_element(By.XPATH, "//*[@id=\"document\"]/ul/li/di
 badInd = sheetRange.index(indBeforeBadTues)
 sheetRange.insert(badInd + 1, badTues)
 
-# strategy: get day of the week in listOfDates, find corresponding element in sheetRange. 
-# have a counter for each day, and depending on that count fill out corresponding box
-dayCounterList = [0, 0, 0, 0, 0, 0, 0] # each index corresponds to a day of the week
-for j in range(0, len(listOfDates)):
-    dayOfWeek = listOfDates[j].getDayWeek()
-    # check if date we are on matches previous date
-    if(j != 0 and listOfDates[j].getPrintableDate() == listOfDates[j - 1].getPrintableDate()):
-        # get child so that element is interactable
-        ranInt = findCorrespondingDay(dayOfWeek, dayCounterList[dayOfWeek] - 1)
-        tiBox2 = sheetRange[ranInt + 3].find_element(By.CLASS_NAME, "text_field_input")
-        toBox2 = sheetRange[ranInt + 4].find_element(By.CLASS_NAME, "text_field_input")
+useDict = True
+if useDict:
 
-        # put hours into other two boxes
-        tiBox2.send_keys(listOfDates[j].getTimeSheetTimeIn())
-        toBox2.send_keys(listOfDates[j].getTimeSheetTimeOut())
+    # need to remove the stray boxes from the list (indicies 0-3, 19, 35, 51)
+    # extraIndicies = [0, 1, 2, 3, 4, 10, 11, 12, 13, 19, 35, 51]
+    # offset = 0
 
-    else:
-        # get child of each box so we can input into it
-        ranInt = findCorrespondingDay(dayOfWeek, dayCounterList[dayOfWeek])
-        dateBox = sheetRange[ranInt].find_element(By.CLASS_NAME, "text_field_input")
-        tiBox = sheetRange[ranInt + 1].find_element(By.CLASS_NAME, "text_field_input")
-        toBox = sheetRange[ranInt + 2].find_element(By.CLASS_NAME, "text_field_input")
-
-        # put new date and hours in
-        dateBox.send_keys(listOfDates[j].getPrintableDate())
-        tiBox.send_keys(listOfDates[j].getTimeSheetTimeIn())
-        toBox.send_keys(listOfDates[j].getTimeSheetTimeOut())
-
-        # increment number in day counter list
-        dayCounterList[dayOfWeek] += 1
+    # kinda a terrible way to do this but it works so????
+    dateIndices = [4, 9, 14, 20, 25, 30, 36, 41, 46, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 137, 142, 147, 152, 157, 162, 167, 172, 177]
     
-    # make sure days are put on the right week
-    if(listOfDates[j].isEndOfWeek):
-        for t in range(0, len(dayCounterList)):
-            if(t <= dayOfWeek):
-                if (dayCounterList[t] < dayCounterList[dayOfWeek]):
-                    # dayCounterList[t] = dayCounterList[dayOfWeek]
-                    dayCounterList[t] += 1
-            else:
-                # here, the day is in the future so we check if its behind by 2, since being behind by 1 is normal
-                if (dayCounterList[t] < dayCounterList[dayOfWeek] + 1):
-                    # dayCounterList[t] = dayCounterList[dayOfWeek]
-                    dayCounterList[t] += 1
+    firstDate = list(datesDict.keys())[0].split("/")
+    currDate = datetime(datetime.today().year, int(firstDate[0]), int(firstDate[1])) # year is not important
+
+    # convert list to dictionary
+    for i, item in enumerate(sheetRange):#, start=(5 * currDate.weekday())):
+        # print((i - offset) % 5)
+        # if (i - offset) % 5 == 0: # makes sure we are on a box expecting a date entry
+        if i in dateIndices:
+            
+            # insert hours worked for that day
+            strDate = str(currDate.month) + "/" + str(currDate.day)
+            if strDate not in datesDict: 
+                print("failed:", strDate)
+                # increment day
+                currDate += timedelta(days=1)
+                continue
+
+            # print(strDate)
+            times = datesDict[strDate]
+            if len(times) > 0:
+                print(i)
+                writeableBox = item.find_element(By.CLASS_NAME, "text_field_input")
+                # write date
+                writeableBox.send_keys(times[0].getPrintableDate())
+                
+                # write times
+                writeableBox = sheetRange[i + 1].find_element(By.CLASS_NAME, "text_field_input")
+                writeableBox.send_keys(times[0].getTimeSheetTimeIn())
+                writeableBox = sheetRange[i + 2].find_element(By.CLASS_NAME, "text_field_input")
+                writeableBox.send_keys(times[0].getTimeSheetTimeOut())
+                print(i + 1)
+                print(i + 2)
+
+                if len(times) == 2: # second time for clock in/out
+                    writeableBox = sheetRange[i + 3].find_element(By.CLASS_NAME, "text_field_input")
+                    writeableBox.send_keys(times[1].getTimeSheetTimeIn())
+                    writeableBox = sheetRange[i + 4].find_element(By.CLASS_NAME, "text_field_input")
+                    writeableBox.send_keys(times[1].getTimeSheetTimeOut())
+                    print(i + 3)
+                    print(i + 4)
+            # increment day
+            currDate += timedelta(days=1)
+            print(strDate)
+
+        # try:
+        #     item.find_element(By.CLASS_NAME, "text_field_input").send_keys(str(i))
+        # except:
+        #     print("Bad box:", i)
+        
+else:
+
+    # strategy: get day of the week in listOfDates, find corresponding element in sheetRange. 
+    # have a counter for each day, and depending on that count fill out corresponding box
+    dayCounterList = [0, 0, 0, 0, 0, 0, 0] # each index corresponds to a day of the week
+    for j in range(0, len(listOfDates)):
+        dayOfWeek = listOfDates[j].getDayWeek()
+        # check if date we are on matches previous date
+        if(j != 0 and listOfDates[j].getPrintableDate() == listOfDates[j - 1].getPrintableDate()):
+            # get child so that element is interactable
+            ranInt = findCorrespondingDay(dayOfWeek, dayCounterList[dayOfWeek] - 1)
+            tiBox2 = sheetRange[ranInt + 3].find_element(By.CLASS_NAME, "text_field_input")
+            toBox2 = sheetRange[ranInt + 4].find_element(By.CLASS_NAME, "text_field_input")
+
+            # put hours into other two boxes
+            tiBox2.send_keys(listOfDates[j].getTimeSheetTimeIn())
+            toBox2.send_keys(listOfDates[j].getTimeSheetTimeOut())
+
+        else:
+            # get child of each box so we can input into it
+            ranInt = findCorrespondingDay(dayOfWeek, dayCounterList[dayOfWeek])
+            dateBox = sheetRange[ranInt].find_element(By.CLASS_NAME, "text_field_input")
+            tiBox = sheetRange[ranInt + 1].find_element(By.CLASS_NAME, "text_field_input")
+            toBox = sheetRange[ranInt + 2].find_element(By.CLASS_NAME, "text_field_input")
+
+            # put new date and hours in
+            dateBox.send_keys(listOfDates[j].getPrintableDate())
+            tiBox.send_keys(listOfDates[j].getTimeSheetTimeIn())
+            toBox.send_keys(listOfDates[j].getTimeSheetTimeOut())
+
+            # increment number in day counter list
+            dayCounterList[dayOfWeek] += 1
+        
+        # make sure days are put on the right week
+        if(listOfDates[j].isEndOfWeek):
+            for t in range(0, len(dayCounterList)):
+                if(t <= dayOfWeek):
+                    if (dayCounterList[t] < dayCounterList[dayOfWeek]):
+                        # dayCounterList[t] = dayCounterList[dayOfWeek]
+                        dayCounterList[t] += 1
+                else:
+                    # here, the day is in the future so we check if its behind by 2, since being behind by 1 is normal
+                    if (dayCounterList[t] < dayCounterList[dayOfWeek] + 1):
+                        # dayCounterList[t] = dayCounterList[dayOfWeek]
+                        dayCounterList[t] += 1
 
 # time.sleep(10)
 
