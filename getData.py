@@ -396,13 +396,13 @@ if useDict:
     dateIndices = [4, 9, 14, 20, 25, 30, 36, 41, 46, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 137, 142, 147, 152, 157, 162, 167, 172, 177]
     
     firstDate = list(datesDict.keys())[0].split("/")
-    currDate = datetime(datetime.today().year, int(firstDate[0]), int(firstDate[1])) # year is not important
+    offsetDate = currDate = datetime(datetime.today().year, int(firstDate[0]), int(firstDate[1])) # year is not important
 
     # convert list to dictionary
     for i, item in enumerate(sheetRange):#, start=(5 * currDate.weekday())):
         # print((i - offset) % 5)
         # if (i - offset) % 5 == 0: # makes sure we are on a box expecting a date entry
-        if i in dateIndices:
+        if i in dateIndices and i > (5 * offsetDate.weekday()):
             
             # insert hours worked for that day
             strDate = str(currDate.month) + "/" + str(currDate.day)
