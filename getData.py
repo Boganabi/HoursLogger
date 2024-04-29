@@ -136,7 +136,8 @@ with open('inputs.txt') as f:
             infoArray.append(x)
 
 # parse values out of array
-eid, asemail, sid, uni, sdate, edate, reviewer, supervisor, admin, cc = infoArray
+# eid, asemail, sid, uni, sdate, edate, reviewer, supervisor, admin, cc = infoArray
+eid, asemail, sid, uni, sdate, edate, reviewer, supervisor, admin = infoArray
 
 # parse into date objects
 sdate = sdate.split("/")
@@ -334,16 +335,16 @@ print("\nPlease sign in to your mycoyote account to continue...\n") # i do this 
 # enters the needed items
 # this find thing is pretty annoying but its the only thing that works >:(
 reviewerBox = WebDriverWait(driver, timeout=1000).until(lambda d: d.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[4]/div[2]/div[2]/div/div[2]/div[3]/div/div/div[1]/textarea"))
-reviewerBox.send_keys("marcy.iniguez@csusb.edu") # reviewer box
+reviewerBox.send_keys(reviewer) # reviewer box
 
 supervisorBox = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[4]/div[2]/div[3]/div/div[2]/div[3]/div/div/div[1]/textarea")
-supervisorBox.send_keys("bobby.laudeman@csusb.edu") # supervisor box
+supervisorBox.send_keys(supervisor) # supervisor box
 
 adminBox = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[4]/div[2]/div[4]/div/div[2]/div[3]/div/div/div[1]/textarea")
-adminBox.send_keys("jamest@csusb.edu") # admin box
+adminBox.send_keys(admin) # admin box
 
-ccBox = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[4]/div[4]/div/div/div[2]/div/div[1]/textarea")
-ccBox.send_keys("ashleea.holloway@csusb.edu") # CC box
+# ccBox = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[4]/div[4]/div/div/div[2]/div/div[1]/textarea")
+# ccBox.send_keys("ashleea.holloway@csusb.edu") # CC box
 
 signButton = driver.find_element(By.XPATH, "//*[@id=\"mainContent\"]/div[2]/div/div[6]/div/ul/li/button")
 signButton.send_keys(Keys.PAGE_DOWN) # need to scroll to button bc element is blocking it
